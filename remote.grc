@@ -1,0 +1,205 @@
+options:
+  parameters:
+    author: nix
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: no_gui
+    hier_block_src_path: '.:'
+    id: remote
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Remote SDR Control
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: control_port
+  id: variable
+  parameters:
+    comment: ''
+    value: '"6970"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [600, 16.0]
+    rotation: 0
+    state: enabled
+- name: control_protocol
+  id: variable
+  parameters:
+    comment: ''
+    value: '"tcp"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [800, 16.0]
+    rotation: 0
+    state: enabled
+- name: frequency
+  id: variable
+  parameters:
+    comment: ''
+    value: '100000000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [296, 16.0]
+    rotation: 0
+    state: enabled
+- name: ip_address
+  id: variable
+  parameters:
+    comment: ''
+    value: '"192.168.1.217"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [384, 16.0]
+    rotation: 0
+    state: enabled
+- name: iq_port
+  id: variable
+  parameters:
+    comment: ''
+    value: '"6969"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [512, 16.0]
+    rotation: 0
+    state: enabled
+- name: iq_protocol
+  id: variable
+  parameters:
+    comment: ''
+    value: '"tcp"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [712, 16.0]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '3200000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 12]
+    rotation: 0
+    state: enabled
+- name: blocks_msgpair_to_var_0
+  id: blocks_msgpair_to_var
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    target: frequency
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1232, 360.0]
+    rotation: 0
+    state: enabled
+- name: soapy_rtlsdr_source_0
+  id: soapy_rtlsdr_source
+  parameters:
+    affinity: ''
+    agc: 'False'
+    alias: ''
+    bias: 'False'
+    bufflen: '16384'
+    center_freq: frequency
+    comment: ''
+    dev_args: ''
+    freq_correction: '0'
+    gain: '20'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fc32
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 280.0]
+    rotation: 0
+    state: enabled
+- name: zeromq_pub_sink_0
+  id: zeromq_pub_sink
+  parameters:
+    address: iq_protocol + "://" + ip_address + ":" + iq_port
+    affinity: ''
+    alias: ''
+    bind: 'True'
+    comment: ''
+    drop_on_hwm: 'True'
+    hwm: '-1'
+    key: ''
+    pass_tags: 'False'
+    timeout: '100'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1224, 232.0]
+    rotation: 0
+    state: enabled
+- name: zeromq_sub_msg_source_0
+  id: zeromq_sub_msg_source
+  parameters:
+    address: control_protocol + "://" + ip_address + ":" + control_port
+    affinity: ''
+    alias: ''
+    bind: 'True'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    timeout: '100'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [344, 352.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [soapy_rtlsdr_source_0, '0', zeromq_pub_sink_0, '0']
+- [zeromq_sub_msg_source_0, out, blocks_msgpair_to_var_0, inpair]
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0
